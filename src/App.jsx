@@ -1,8 +1,6 @@
-import { useState } from "react";
 import {
   GoogleAuthProvider,
   FacebookAuthProvider,
-  GithubAuthProvider,
 } from "firebase/auth";
 import auth from "./utils/firebaseConfig";
 import "./App.css";
@@ -14,7 +12,7 @@ function App() {
       const provider = new GoogleAuthProvider();
       const result = await signInWithPopup(auth, provider);
 
-      console.log(" User google name:", result.user.displayName);
+      console.log("User google name:", result.user.displayName);
       console.log("User google email", result.user.email);
       console.log("User google Photo", result.user.photoURL);
     } catch (error) {
