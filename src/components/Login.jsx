@@ -1,77 +1,82 @@
-import { GoogleAuthProvider, FacebookAuthProvider, signInWithRedirect } from "firebase/auth";
+import {
+  GoogleAuthProvider,
+  FacebookAuthProvider,
+  signInWithRedirect,
+} from "firebase/auth";
 import { signInWithPopup } from "firebase/auth";
 import auth from "../utils/firebaseConfig";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { getRedirectResult } from "firebase/auth";
 
-import { setAuthState } from "../store/countSlice";
+import { setAuthState, increment, decrement } from "../store/countSlice";
 import { Navigate, useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 
 const Login = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  
 
-//   const signInWithGoogle = async () => {
-//     try {
-//       const provider = new GoogleAuthProvider();
-//       const result = await signInWithRedirect(auth, provider);
+  const count = useSelector((state) => state.count.value);
 
-//       console.log("data", result);
-//       console.log("User google name:", result.user.displayName);
-//       console.log("User google email", result.user.email);
-//       console.log("User google Photo", result.user.photoURL);
-//       console.log('data', result.user);
+  const signInWithGoogle = async () => {
+    try {
+      const provider = new GoogleAuthProvider();
+      const result = await signInWithPopup(auth, provider);
 
-//       dispatch(
-//         setAuthState({
-//           user: {
-//             name: result.user.displayName,
-//             email: result.user.email,
-//             photoURL: result.user.photoURL,
-//             uid: result.user.uid,
-//           },
-//         })
-//       );
+      console.log("data", result);
+      console.log("User google name:", result.user.displayName);
+      console.log("User google email", result.user.email);
+      console.log("User google Photo", result.user.photoURL);
+      console.log("data", result.user);
 
-// if (result) {
-//   <Navigate to={"/dashboard"} />;
-// }
-//     } catch (error) {
-//       console.log(error);
-//     }
-//   };
+      dispatch(
+        setAuthState({
+          user: {
+            name: result.user.displayName,
+            email: result.user.email,
+            photoURL: result.user.photoURL,
+            uid: result.user.uid,
+          },
+        })
+      );
 
-
-const signInWithGoogle = async () => {
-  const provider = new GoogleAuthProvider();
-  await signInWithRedirect(auth, provider);
-};
-
-useEffect(() => {
-  getRedirectResult(auth)
-    .then((result) => {
       if (result) {
-        const user = result.user;
-        console.log('data', user);
-        dispatch(
-          setAuthState({
-            user: {
-              name: user.displayName,
-              email: user.email,
-              photoURL: user.photoURL,
-              uid: user.uid,
-            },
-          })
-        );
-        navigate("/dashboard"); // use useNavigate from react-router-dom
+        navigate("/dashboard");
       }
-    })
-    .catch((error) => {
-      console.log("Redirect error:", error);
-    });
-}, [auth]);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  // const signInWithGoogle = async () => {
+  //   const provider = new GoogleAuthProvider();
+  //   await signInWithRedirect(auth, provider);
+  // };
+
+  // useEffect(() => {
+  //   getRedirectResult(auth)
+  //     .then((result) => {
+  //       if (result) {
+  //         const user = result.user;
+  //         console.log('data', user);
+  //         dispatch(
+  //           setAuthState({
+  //             user: {
+  //               name: user.displayName,
+  //               email: user.email,
+  //               photoURL: user.photoURL,
+  //               uid: user.uid,
+  //             },
+  //           })
+  //         );
+  //         navigate("/dashboard"); // use useNavigate from react-router-dom
+  //       }
+  //     })
+  //     .catch((error) => {
+  //       console.log("Redirect error:", error);
+  //     });
+  // }, [auth]);
+
   const signInWithFacebook = async () => {
     try {
       const provider = new FacebookAuthProvider();
@@ -88,6 +93,7 @@ useEffect(() => {
   return (
     <div>
       <h1>Welcome back</h1>
+      <p>{count}</p>
       <div className="flex flex-col space-y-4 w-full max-w-sm mx-auto mt-6">
         <button
           onClick={signInWithGoogle}
@@ -101,6 +107,24 @@ useEffect(() => {
         >
           Sign in with Facebook
         </button>
+        <div className="flex space-x-4">
+          <button
+            className="bg-blue-600 text-white px-6 py-2 rounded-lg shadow hover:bg-blue-700 transition"
+            onClick={() => {
+              dispatch(increment());
+            }}
+          >
+            Add
+          </button>
+          <button
+            className="border border-blue-600 text-blue-600 px-6 py-2 rounded-lg hover:bg-blue-50 transition"
+            onClick={() => {
+              dispatch(decrement());
+            }}
+          >
+            Subtract
+          </button>
+        </div>
       </div>
     </div>
   );
